@@ -1,0 +1,10 @@
+name = "BrainFlowViz"
+uuid = "4d7a9372-0abb-49b3-9a3e-33cd7904c589"
+authors = ["matcox <matthijs.cox@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+AbstractPlotting = "537997a7-5e4e-5d89-9595-2241ea00577e"
+BrainFlow = "abd5acf9-0fc9-4730-984d-e27a37823580"
+GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
+Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
