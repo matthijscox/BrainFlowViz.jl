@@ -1,5 +1,7 @@
+using BrainFlow
+using BrainFlowViz
 
-function get_some_synthetic_board_data(board_shim, nsamples)
+function get_some_board_data(board_shim, nsamples)
     data = BrainFlow.get_current_board_data(nsamples, board_shim)
     data = transpose(data)
     return view(data, :, 2:9)
@@ -18,7 +20,7 @@ BrainFlow.start_stream(board_shim)
 # brief sleep
 sleep(1)
 
-data_func = ()->get_some_synthetic_board_data(board_shim, nsamples)
+data_func = ()->get_some_board_data(board_shim, nsamples)
 
 # start a live plotting task
 t = @task BrainFlowViz.plot_data(data_func, nsamples, nchannels)
