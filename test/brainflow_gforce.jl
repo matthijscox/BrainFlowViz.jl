@@ -7,29 +7,25 @@ function get_some_board_data(board_shim, nsamples)
     return view(data, :, 2:9)
 end
 
-nchannels = 8
-nsamples = 256
-
 ### Start streaming
 BrainFlow.enable_dev_logger(BrainFlow.BOARD_CONTROLLER)
 params = BrainFlowInputParams()
-board_shim = BrainFlow.BoardShim(BrainFlow.SYNTHETIC_BOARD, params)
+board_shim = BrainFlow.BoardShim(BrainFlow.GFORCE_PRO_BOARD, params)
 BrainFlow.prepare_session(board_shim)
 BrainFlow.start_stream(board_shim)
 
-# brief sleep
-sleep(0.5)
-
+nchannels = 8
+nsamples = 512
 data_func = ()->get_some_board_data(board_shim, nsamples)
 
 # start a live plotting task
 t = @task BrainFlowViz.plot_data(
     data_func, 
     nsamples, 
-    nchannels, 
-    theme = :dark, 
+    nchannels; 
+    y_lim = [-1000 5000], 
+    theme = :dark,
     color = :lime,
-    delay = 0.02,
     )
 
 sleep(0.5)

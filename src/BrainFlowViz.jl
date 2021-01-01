@@ -3,7 +3,12 @@ module BrainFlowViz
     using BrainFlow
     using Makie, GLMakie, AbstractPlotting
 
-    function init_scene(xs, ys; x_lim = (0, length(xs)), y_lim = (0, 1))
+    function init_scene(xs, ys; 
+        x_lim = (0, length(xs)), 
+        y_lim = (0, 1), 
+        theme = :light,
+        color = :green,
+    )
         nsamples, nchannels = size(ys)
         ys_n = []
         for n = 1:nchannels
@@ -15,15 +20,33 @@ module BrainFlowViz
         scene, layout = layoutscene(
             outer_padding, 
             resolution = (1200, 700),
-            backgroundcolor = RGBf0(0.98, 0.98, 0.98),
+            backgroundcolor = RGBf0(0.99, 0.99, 0.99),
         )
 
         ax = Array{LAxis, 1}(undef, nchannels)
         for n = 1:nchannels
             ax[n] = layout[n, 1] = LAxis(scene, ylabel = "ch$n")
-            lines!(ax[n], xs, ys_n[n], color = :blue, linewidth = 1)
+            lines!(ax[n], xs, ys_n[n], color = color, linewidth = 2)
             ax[n].yticklabelsvisible = false
             limits!(ax[n], x_lim[1], x_lim[2], y_lim[1], y_lim[2])
+        end
+
+        # TODO: use AbstractPlotting.Theme
+        if theme == :dark
+            scene.backgroundcolor[] = RGBf0(0.01, 0.01, 0.01)
+            for n = 1:nchannels
+                ax[n].backgroundcolor[] = :black
+                ax[n].ylabelcolor[] = :white
+                ax[n].xlabelcolor[] = :white
+                ax[n].yticklabelcolor[] = :white
+                ax[n].xticklabelcolor[] = :white
+                ax[n].xtickcolor[] = :white
+                ax[n].ytickcolor[] = :white
+                ax[n].leftspinecolor[] = :white
+                ax[n].rightspinecolor[] = :white
+                ax[n].topspinecolor[] = :white
+                ax[n].bottomspinecolor[] = :white
+            end
         end
         #linkaxes!(ax...)
 
@@ -36,7 +59,7 @@ module BrainFlowViz
     end
 
     # live plotting function
-    function plot_data(data_func::Function, nsamples, nchannels; y_lim = :auto, kwargs...)
+    function plot_data(data_func::Function, nsamples, nchannels; delay = 0.05, y_lim = :auto, kwargs...)
 
         xs = collect(1:nsamples)
         #ys = zeros(nsamples, nchannels)
@@ -51,7 +74,7 @@ module BrainFlowViz
         display(scene)
 
         while(true)
-            sleep(0.05)
+            sleep(delay)
 
             # overwrite the original data 
             ys = data_func()
