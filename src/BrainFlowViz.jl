@@ -46,6 +46,8 @@ module BrainFlowViz
                 ax[n].rightspinecolor[] = :white
                 ax[n].topspinecolor[] = :white
                 ax[n].bottomspinecolor[] = :white
+                ax[n].xgridcolor = :black
+                ax[n].ygridcolor = :black
             end
         end
         #linkaxes!(ax...)

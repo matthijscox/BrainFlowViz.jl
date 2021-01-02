@@ -4,7 +4,12 @@ using BrainFlowViz
 function get_some_board_data(board_shim, nsamples)
     data = BrainFlow.get_current_board_data(nsamples, board_shim)
     data = transpose(data)
-    return view(data, :, 2:9)
+    emg_data = view(data, :, 2:9)
+    for chan in 1:8
+        emg_channel_data = view(emg_data, :, chan)
+        BrainFlow.detrend(emg_channel_data, BrainFlow.CONSTANT)
+    end
+    return emg_data
 end
 
 ### Start streaming
@@ -23,7 +28,7 @@ t = @task BrainFlowViz.plot_data(
     data_func, 
     nsamples, 
     nchannels; 
-    y_lim = [-1000 5000], 
+    y_lim = [-1300 1300], 
     theme = :dark,
     color = :lime,
     )
