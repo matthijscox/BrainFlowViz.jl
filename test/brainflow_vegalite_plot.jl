@@ -12,19 +12,19 @@ BrainFlow.prepare_session(board_shim)
 BrainFlow.start_stream(board_shim)
 sleep(5)
 BrainFlow.stop_stream(board_shim)
-data = BrainFlow.get_board_data(board_shim)
+data = transpose(BrainFlow.get_board_data(board_shim))
 BrainFlow.release_session(board_shim)
 
 emg_channels = BrainFlow.get_emg_channels(BrainFlow.GFORCE_PRO_BOARD)
-emg_data = data[emg_channels,:]
+emg_data = data[:, emg_channels]
 
 emg_names = Symbol.(["emg$x" for x in 1:8])
-df = DataFrame(emg_data')
+df = DataFrame(emg_data)
 DataFrames.rename!(df, emg_names)
 
 sampling_rate = BrainFlow.get_sampling_rate(BrainFlow.GFORCE_PRO_BOARD)
 nrows = size(df)[1]
-df.time = (1:nrows)/nrows*5
+df.time = (1:nrows)/sampling_rate
 
 df2 = stack(df, 1:8)
 rename!(df2, [:time, :channel, :value])
