@@ -3,9 +3,9 @@ module BrainFlowViz
     using BrainFlow
     using Makie, GLMakie, AbstractPlotting
 
-    function init_scene(xs, ys; 
-        x_lim = (0, length(xs)), 
-        y_lim = (0, 1), 
+    function init_scene(xs, ys;
+        x_lim = (0, length(xs)),
+        y_lim = (0, 1),
         theme = :light,
         color = :green,
     )
@@ -18,7 +18,7 @@ module BrainFlowViz
         outer_padding = 30
 
         scene, layout = layoutscene(
-            outer_padding, 
+            outer_padding,
             resolution = (1200, 700),
             backgroundcolor = RGBf0(0.99, 0.99, 0.99),
         )
@@ -78,10 +78,10 @@ module BrainFlowViz
         while(true)
             sleep(delay)
 
-            # overwrite the original data 
+            # overwrite the original data
             ys = data_func()
             available_nsamples = size(ys, 1)
-            
+
             # update x-axis without triggering a refresh
             empty!(xs)
             append!(xs, collect(1:available_nsamples))
