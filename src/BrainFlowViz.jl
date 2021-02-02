@@ -3,6 +3,28 @@ module BrainFlowViz
     using BrainFlow
     using Makie, GLMakie, AbstractPlotting
 
+    function set_dark!(ax)
+        ax.backgroundcolor[] = :black
+        ax.ylabelcolor[] = :white
+        ax.xlabelcolor[] = :white
+        ax.yticklabelcolor[] = :white
+        ax.xticklabelcolor[] = :white
+        ax.xtickcolor[] = :white
+        ax.ytickcolor[] = :white
+        ax.leftspinecolor[] = :white
+        ax.rightspinecolor[] = :white
+        ax.topspinecolor[] = :white
+        ax.bottomspinecolor[] = :white
+        ax.xgridcolor = :black
+        ax.ygridcolor = :black
+    end
+
+    function set_dark!(axes::AbstractArray)
+        for ax in axes
+            set_dark!(ax)
+        end
+    end
+
     function init_scene(xs, ys;
         x_lim = (0, length(xs)),
         y_lim = (0, 1),
@@ -10,7 +32,8 @@ module BrainFlowViz
         color = :green,
         ncolumns = 2,
         column_gap = 0,
-        layout_size = (1200, 700)
+        layout_size = (1200, 700),
+        plot_band_powers = true,
     )
         nsamples, nchannels = size(ys)
         ys_n = []
@@ -26,13 +49,15 @@ module BrainFlowViz
             backgroundcolor = RGBf0(0.99, 0.99, 0.99),
         )
 
+        layout_top = GridLayout()
+
         n_ax_per_column = Int(ceil(nchannels/ncolumns))
 
         ax = Array{LAxis, 1}(undef, nchannels)
         for n = 1:nchannels
             row_loc = mod(n-1, n_ax_per_column)+1
             col_loc = Int(ceil(n/n_ax_per_column))
-            ax[n] = layout[row_loc, col_loc] = LAxis(scene, ylabel = "ch$n")
+            ax[n] = layout_top[row_loc, col_loc] = LAxis(scene, ylabel = "ch$n")
             lines!(ax[n], xs, ys_n[n], color = color, linewidth = 2)
             ax[n].yticklabelsvisible = false
             limits!(ax[n], x_lim[1], x_lim[2], y_lim[1], y_lim[2])
@@ -41,21 +66,7 @@ module BrainFlowViz
         # TODO: use AbstractPlotting.Theme
         if theme == :dark
             scene.backgroundcolor[] = RGBf0(0.01, 0.01, 0.01)
-            for n = 1:nchannels
-                ax[n].backgroundcolor[] = :black
-                ax[n].ylabelcolor[] = :white
-                ax[n].xlabelcolor[] = :white
-                ax[n].yticklabelcolor[] = :white
-                ax[n].xticklabelcolor[] = :white
-                ax[n].xtickcolor[] = :white
-                ax[n].ytickcolor[] = :white
-                ax[n].leftspinecolor[] = :white
-                ax[n].rightspinecolor[] = :white
-                ax[n].topspinecolor[] = :white
-                ax[n].bottomspinecolor[] = :white
-                ax[n].xgridcolor = :black
-                ax[n].ygridcolor = :black
-            end
+            set_dark!(ax)
         end
         #linkaxes!(ax...)
 
@@ -67,7 +78,18 @@ module BrainFlowViz
             end
         end
 
-        colgap!(layout, column_gap)
+        colgap!(layout_top, column_gap)
+        layout[1,1] = layout_top
+
+        # add a nested grid at the bottom
+        if plot_band_powers
+            layout_bottom = GridLayout()
+            bottom_axes = [LAxis(scene)]
+            set_dark!(bottom_axes)
+            layout_bottom[1,:] = bottom_axes
+            layout[2,1] = layout_bottom
+            rowsize!(layout, 2, Relative(0.3))
+        end
 
         return scene, ys_n
     end
