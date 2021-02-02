@@ -8,6 +8,7 @@ module BrainFlowViz
         y_lim = (0, 1),
         theme = :light,
         color = :green,
+        ncolumns = 2,
     )
         nsamples, nchannels = size(ys)
         ys_n = []
@@ -23,9 +24,13 @@ module BrainFlowViz
             backgroundcolor = RGBf0(0.99, 0.99, 0.99),
         )
 
+        n_ax_per_column = Int(ceil(nchannels/ncolumns))
+
         ax = Array{LAxis, 1}(undef, nchannels)
         for n = 1:nchannels
-            ax[n] = layout[n, 1] = LAxis(scene, ylabel = "ch$n")
+            row_loc = mod(n-1, n_ax_per_column)+1
+            col_loc = Int(ceil(n/n_ax_per_column))
+            ax[n] = layout[row_loc, col_loc] = LAxis(scene, ylabel = "ch$n")
             lines!(ax[n], xs, ys_n[n], color = color, linewidth = 2)
             ax[n].yticklabelsvisible = false
             limits!(ax[n], x_lim[1], x_lim[2], y_lim[1], y_lim[2])
@@ -53,8 +58,11 @@ module BrainFlowViz
         #linkaxes!(ax...)
 
         # hide the x stuff
+        is_bottom_ax(n::Int) = mod(n, n_ax_per_column) == 0
         for n=1:nchannels-1
-            hidexdecorations!(ax[n], grid = false)
+            if !is_bottom_ax(n)
+                hidexdecorations!(ax[n], grid = false)
+            end
         end
 
         return scene, ys_n

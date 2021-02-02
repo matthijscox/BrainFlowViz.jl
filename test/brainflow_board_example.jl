@@ -3,12 +3,17 @@ using BrainFlowViz
 
 function get_some_board_data(board_shim, nsamples)
     data = BrainFlow.get_current_board_data(nsamples, board_shim)
+    eeg_chans = BrainFlow.get_eeg_channels(board_shim.board_id)
     data = transpose(data)
-    return view(data, :, 2:9)
+    return view(data, :, eeg_chans)
 end
 
-nchannels = 8
-nsamples = 256
+function calc_avg_band_powers(data)
+    chans = 1:size(data, 2)
+    sampling_rate = BrainFlow.get_sampling_rate(BrainFlow.SYNTHETIC_BOARD)
+    apply_filter = true
+    avg_band_power = BrainFlow.get_avg_band_powers(transpose(data), chans, sampling_rate, apply_filter)
+end
 
 ### Start streaming
 BrainFlow.enable_dev_logger(BrainFlow.BOARD_CONTROLLER)
@@ -17,28 +22,24 @@ board_shim = BrainFlow.BoardShim(BrainFlow.SYNTHETIC_BOARD, params)
 BrainFlow.prepare_session(board_shim)
 BrainFlow.start_stream(board_shim)
 
+nchannels = length(BrainFlow.get_eeg_channels(board_shim.board_id))
+nsamples = 256
+
 # brief sleep
 sleep(0.5)
 
 data_func = ()->get_some_board_data(board_shim, nsamples)
 
 # start a live plotting task
-t = @task BrainFlowViz.plot_data(
+BrainFlowViz.plot_data(
     data_func, 
     nsamples, 
     nchannels, 
     theme = :dark, 
     color = :lime,
     delay = 0.02,
+    ncolumns = 2,
     )
-
-sleep(0.5)
-schedule(t)
-
-sleep(4)
-
-### to stop the task:
-schedule(t, InterruptException(), error=true)
 
 # this should go into a 'finally' of try/catch/finally
 BrainFlow.stop_stream(board_shim)
