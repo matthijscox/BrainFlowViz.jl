@@ -9,6 +9,8 @@ module BrainFlowViz
         theme = :light,
         color = :green,
         ncolumns = 2,
+        column_gap = 0,
+        layout_size = (1200, 700)
     )
         nsamples, nchannels = size(ys)
         ys_n = []
@@ -20,7 +22,7 @@ module BrainFlowViz
 
         scene, layout = layoutscene(
             outer_padding,
-            resolution = (1200, 700),
+            resolution = layout_size,
             backgroundcolor = RGBf0(0.99, 0.99, 0.99),
         )
 
@@ -64,6 +66,8 @@ module BrainFlowViz
                 hidexdecorations!(ax[n], grid = false)
             end
         end
+
+        colgap!(layout, column_gap)
 
         return scene, ys_n
     end

@@ -39,6 +39,8 @@ BrainFlowViz.plot_data(
     color = :lime,
     delay = 0.02,
     ncolumns = 2,
+    column_gap = 300,
+    layout_size = (1800, 700)
     )
 
 # this should go into a 'finally' of try/catch/finally
