@@ -8,9 +8,9 @@ function get_some_board_data(board_shim, nsamples)
     return view(data, :, eeg_chans)
 end
 
-function calc_avg_band_powers(data)
+function calc_avg_band_powers(data, board_id = BrainFlow.SYNTHETIC_BOARD)
     chans = 1:size(data, 2)
-    sampling_rate = BrainFlow.get_sampling_rate(BrainFlow.SYNTHETIC_BOARD)
+    sampling_rate = BrainFlow.get_sampling_rate(board_id)
     apply_filter = true
     avg_band_power = BrainFlow.get_avg_band_powers(transpose(data), chans, sampling_rate, apply_filter)
 end
@@ -39,10 +39,10 @@ BrainFlowViz.plot_data(
     color = :lime,
     delay = 0.02,
     ncolumns = 2,
-    column_gap = 300,
-    layout_size = (1800, 700)
+    column_gap = 500,
+    layout_size = (1500, 700)
     )
 
 # this should go into a 'finally' of try/catch/finally
-BrainFlow.stop_stream(board_shim)
-BrainFlow.release_session(board_shim)
+# BrainFlow.stop_stream(board_shim)
+# BrainFlow.release_session(board_shim)
