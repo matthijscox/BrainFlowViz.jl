@@ -25,6 +25,7 @@ module BrainFlowViz
         ax.bottomspinecolor[] = :white
         ax.xgridcolor = :black
         ax.ygridcolor = :black
+        #ax.titlecolor = :white # need to update Makie?
     end
 
     function set_dark!(axes::AbstractArray)
@@ -102,14 +103,16 @@ module BrainFlowViz
         
         n_bands = 5
         
-        bottom_axes = [LAxis(scene) for _ in 1:n_bands]
+        bottom_axes = []
+        band_names = ["delta", "theta", "alpha", "beta", "gamma"]
 
         layout_bottom = GridLayout()
+        for n = 1:n_bands
+            push!(bottom_axes, LAxis(scene, title = band_names[n]))
+            layout_bottom[1,n] = bottom_axes[n]
+        end
         if theme == :dark
             set_dark!(bottom_axes)
-        end
-        for n = 1:n_bands
-            layout_bottom[1,n] = bottom_axes[n]
         end
         layout[2,1] = layout_bottom
         rowsize!(layout, 2, Relative(0.3))
@@ -136,6 +139,7 @@ module BrainFlowViz
         delay = 0.05, 
         y_lim = :auto, 
         plot_band_powers::Bool = true, 
+        board_id, 
         kwargs...
     )
 
@@ -174,11 +178,11 @@ module BrainFlowViz
             end
 
             if plot_band_powers
+                avg_band_powers = calc_avg_band_powers(ys, board_id)[1]
                 n_bands = length(bands_data)
-                #TODO: calc_avg_band_powers(ys) # also add board_id...
                 for n = 1:n_bands
                     cb = bands_data[n][]
-                    push!(cb, rand(1)[1])
+                    push!(cb, avg_band_powers[n])
                     bands_data[n][] = cb
                 end
             end
