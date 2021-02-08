@@ -13,13 +13,6 @@ function get_some_board_data(board_shim, nsamples)
     return eeg_data
 end
 
-function calc_avg_band_powers(data, board_id = BrainFlow.SYNTHETIC_BOARD)
-    chans = 1:size(data, 2)
-    sampling_rate = BrainFlow.get_sampling_rate(board_id)
-    apply_filter = true
-    avg_band_power = BrainFlow.get_avg_band_powers(transpose(data), chans, sampling_rate, apply_filter)
-end
-
 ### Start streaming
 BrainFlow.enable_dev_logger(BrainFlow.BOARD_CONTROLLER)
 params = BrainFlowInputParams()
@@ -37,10 +30,10 @@ data_func = ()->get_some_board_data(board_shim, nsamples)
 
 # start a live plotting task
 BrainFlowViz.plot_data(
-    data_func, 
-    nsamples, 
-    nchannels, 
-    theme = :dark, 
+    data_func,
+    nsamples,
+    nchannels,
+    theme = :dark,
     color = :lime,
     delay = 0.02,
     ncolumns = 2,
