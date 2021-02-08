@@ -149,6 +149,7 @@ module BrainFlowViz
 
         if y_lim === :auto
             y_lim = (minimum(ys), maximum(ys))
+            println("ylim = $y_lim")
         end
 
         scene, layout, ys_n = init_scene(xs, ys; y_lim = y_lim, kwargs...)

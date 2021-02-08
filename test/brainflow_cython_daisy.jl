@@ -22,16 +22,16 @@ function get_some_board_data(board_shim, nsamples)
     eeg_data = view(data, :, eeg_chans)
     for chan in 1:length(eeg_chans)
         channel_data = view(eeg_data, :, chan)
-        BrainFlow.detrend(channel_data, BrainFlow.CONSTANT)
         filter_bandstop!(channel_data, board_shim)
+        BrainFlow.detrend(channel_data, BrainFlow.CONSTANT)
     end
     return eeg_data
 end
 
 ### Start streaming
 BrainFlow.enable_dev_logger(BrainFlow.BOARD_CONTROLLER)
-params = BrainFlowInputParams()
-board_shim = BrainFlow.BoardShim(BrainFlow.SYNTHETIC_BOARD, params)
+params = BrainFlowInputParams(serial_port="COM5")
+board_shim = BrainFlow.BoardShim(BrainFlow.CYTON_DAISY_BOARD, params)
 BrainFlow.prepare_session(board_shim)
 BrainFlow.start_stream(board_shim)
 
