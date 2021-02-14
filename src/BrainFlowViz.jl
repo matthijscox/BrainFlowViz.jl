@@ -3,12 +3,16 @@ module BrainFlowViz
     using BrainFlow
     using Makie, GLMakie, AbstractPlotting
     using DataStructures
+    using LinearAlgebra
+
+    undo_transpose(A::LinearAlgebra.Transpose)= transpose(A)
+    undo_transpose(A) = A
 
     function calc_avg_band_powers(data, board_id = BrainFlow.SYNTHETIC_BOARD)
         chans = 1:size(data, 2)
         sampling_rate = BrainFlow.get_sampling_rate(board_id)
         apply_filter = true
-        avg_band_power = BrainFlow.get_avg_band_powers(transpose(data), chans, sampling_rate, apply_filter)
+        avg_band_power = BrainFlow.get_avg_band_powers(undo_transpose(data), chans, sampling_rate, apply_filter)
     end
 
     function set_dark!(ax)

@@ -8,7 +8,7 @@ function filter_bandstop!(
     center_freq::Float64 = 50.0,
     band_width::Float64 = 4.0, 
     order::Integer = 4, 
-    ripple::Float64 = 1.0
+    ripple::Float64 = 0.0
 )
     sampling_rate = BrainFlow.get_sampling_rate(board_shim.board_id)
     BrainFlow.perform_bandstop(data, sampling_rate, center_freq,
@@ -18,12 +18,13 @@ end
 function get_some_board_data(board_shim, nsamples)
     data = BrainFlow.get_current_board_data(nsamples, board_shim)
     eeg_chans = BrainFlow.get_eeg_channels(board_shim.board_id)
-    data = transpose(data)
+    #data = transpose(data)
     eeg_data = view(data, :, eeg_chans)
     for chan in 1:length(eeg_chans)
         channel_data = view(eeg_data, :, chan)
         BrainFlow.detrend(channel_data, BrainFlow.CONSTANT)
         filter_bandstop!(channel_data, board_shim)
+        # add bandpass filter, what settings?
     end
     return eeg_data
 end
