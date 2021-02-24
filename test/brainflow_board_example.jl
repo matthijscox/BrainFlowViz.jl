@@ -18,7 +18,7 @@ end
 function get_some_board_data(board_shim, nsamples)
     data = BrainFlow.get_current_board_data(nsamples, board_shim)
     eeg_chans = BrainFlow.get_eeg_channels(board_shim.board_id)
-    #data = transpose(data)
+    data = BrainFlowViz.undo_transpose(data)
     eeg_data = view(data, :, eeg_chans)
     for chan in 1:length(eeg_chans)
         channel_data = view(eeg_data, :, chan)
