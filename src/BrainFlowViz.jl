@@ -23,9 +23,9 @@ module BrainFlowViz
             backgroundcolor = RGBf0(0.99, 0.99, 0.99),
         )
 
-        ax = Array{LAxis, 1}(undef, nchannels)
+        ax = Array{Axis, 1}(undef, nchannels)
         for n = 1:nchannels
-            ax[n] = layout[n, 1] = LAxis(scene, ylabel = "ch$n")
+            ax[n] = layout[n, 1] = Axis(scene, ylabel = "ch$n")
             lines!(ax[n], xs, ys_n[n], color = color, linewidth = 2)
             ax[n].yticklabelsvisible = false
             limits!(ax[n], x_lim[1], x_lim[2], y_lim[1], y_lim[2])
