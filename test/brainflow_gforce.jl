@@ -28,7 +28,7 @@ t = @task BrainFlowViz.plot_data(
     data_func, 
     nsamples, 
     nchannels; 
-    #y_lim = [-1300 1300], 
+    y_lim = [-200 200], 
     theme = :dark,
     color = :lime,
     )
