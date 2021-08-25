@@ -5,14 +5,16 @@ module BrainFlowViz
     using DataStructures
     using LinearAlgebra
 
-    undo_transpose(A::LinearAlgebra.Transpose)= transpose(A)
+    undo_transpose(A::LinearAlgebra.Transpose) = transpose(A)
     undo_transpose(A) = A
+    force_transpose(A::LinearAlgebra.Transpose) = A
+    force_transpose(A) = transpose(A)
 
     function calc_avg_band_powers(data, board_id = BrainFlow.SYNTHETIC_BOARD)
         chans = 1:size(data, 2)
         sampling_rate = BrainFlow.get_sampling_rate(board_id)
         apply_filter = true
-        avg_band_power = BrainFlow.get_avg_band_powers(undo_transpose(data), chans, sampling_rate, apply_filter)
+        avg_band_power = BrainFlow.get_avg_band_powers(force_transpose(data), chans, sampling_rate, apply_filter)
     end
 
     function set_dark!(ax)
@@ -66,11 +68,11 @@ module BrainFlowViz
 
         n_ax_per_column = Int(ceil(nchannels/ncolumns))
 
-        ax = Array{LAxis, 1}(undef, nchannels)
+        ax = Array{Axis, 1}(undef, nchannels)
         for n = 1:nchannels
             row_loc = mod(n-1, n_ax_per_column)+1
             col_loc = Int(ceil(n/n_ax_per_column))
-            ax[n] = layout_top[row_loc, col_loc] = LAxis(scene, ylabel = "ch$n")
+            ax[n] = layout_top[row_loc, col_loc] = Axis(scene, ylabel = "ch$n")
             lines!(ax[n], xs, ys_n[n], color = color, linewidth = 2)
             ax[n].yticklabelsvisible = false
             limits!(ax[n], x_lim[1], x_lim[2], y_lim[1], y_lim[2])
@@ -112,7 +114,7 @@ module BrainFlowViz
 
         layout_bottom = GridLayout()
         for n = 1:n_bands
-            push!(bottom_axes, LAxis(scene, title = band_names[n]))
+            push!(bottom_axes, Axis(scene, title = band_names[n]))
             layout_bottom[1,n] = bottom_axes[n]
         end
         if theme == :dark
